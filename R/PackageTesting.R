@@ -1,5 +1,4 @@
 # Load required libraries
-library(devtools)
 library(sf)
 library(ggplot2)
 library(rnaturalearth)
@@ -14,9 +13,9 @@ denmark <- ne_countries(scale = "medium", country = "Ghana", returnclass = "sf")
 # Example usage
 api_key <- "917f143bded8a25852d7f824ca527e13"
 start_date <- "2024-05-01"
-end_date <- "2024-08-31"
+end_date <- "2024-07-31"
 
-firms_data <- fetch_firms_data(api_key, denmark, start_date, end_date, dataset = "MODIS_NRT", confidence_level = c("h"))
+firms_data <- fetch_firms(api_key, denmark, start_date, end_date, dataset = "MODIS_NRT", confidence_level = c("h"))
 
 print(head(firms_data))   # See first 6 rows
 print(dim(firms_data))    # Get number of rows and columns
@@ -54,4 +53,15 @@ ggplot() +
   geom_point(data = fires_in_agriculture, aes(x = longitude, y = latitude), color = "blue", size = 2) +
   labs(title = "Classified Fire Types",
        subtitle = "Green = Forest/Agriculture Fires, Red = Industrial/Power Fires")
+
+
+# Test plot functions
+
+plot_firms(firms_data)
+
+uncategorized <- uncategorized_fires(firms_data, list(fires_in_nature, fires_in_agriculture, industrial_fires))
+
+plot_osm_firms(list(fires_in_nature, fires_in_agriculture, industrial_fires), firms_uncategorized = uncategorized)
+
+
 
