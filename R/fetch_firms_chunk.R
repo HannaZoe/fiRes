@@ -1,4 +1,21 @@
-# Function 1b: Helper function called in Function 1
+#' Helper function to fetch a single chunk of FIRMS fire data
+#'
+#' This internal function retrieves a chunk (up to 10 days) of FIRMS fire data from NASA's FIRMS API
+#' for a specific bounding box and time range. It also applies spatial filtering based on a user-defined region
+#' and optionally filters fire points based on confidence levels.
+#'
+#' @param api_key Character. Your NASA API key.
+#' @param region_sf An `sf` object defining the region of interest. Must be in WGS 84.
+#' @param start_date Start date of the chunk (in "YYYY-MM-DD" format).
+#' @param end_date End date of the chunk (in "YYYY-MM-DD" format).
+#' @param dataset Character. Either `"VIIRS_SNPP_NRT"` or `"MODIS_NRT"`.
+#' @param confidence_level Optional. A character or numeric vector defining the confidence levels to filter.
+#' For MODIS, use `"l"`, `"n"`, `"h"`. For VIIRS, use numeric thresholds.
+#' @param bbox_str A comma-separated string of the bounding box coordinates (xmin, ymin, xmax, ymax).
+#'
+#' @return An `sf` object with fire detections that fall inside the given region and match the confidence filter, or `NULL` if no data was found.
+#' @keywords internal
+#' @noRd
 
 fetch_firms_chunk <- function(api_key, region_sf, start_date, end_date, dataset, confidence_level, bbox_str) {
   day_range <- as.numeric(difftime(end_date, start_date, units = "days")) + 1

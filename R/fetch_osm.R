@@ -1,6 +1,31 @@
-# Function 2: Fetching OSM Data
+#' Classify fire points based on OpenStreetMap land cover types
+#'
+#' This function uses OpenStreetMap (OSM) data to classify fire detections (e.g., from FIRMS) into user-defined
+#' land cover categories (e.g., natural, urban, industrial). Each fire point is buffered and grouped into clusters,
+#' then OSM is queried for relevant land use features around those clusters. Fires are then classified based on
+#' whether they intersect with the queried features.
+#'
+#' @param firms_sf An `sf` object with fire locations (point geometry, typically from `fetch_firms()`).
+#' @param feature_types Character vector of OSM feature categories to classify by.
+#' Options are `"natural"`, `"agriculture"`, `"urban"`, `"industrial"`, `"military"`, `"waste"`, `"parks"`, `"airport"`.
+#' @param must_be_in Logical. If `TRUE` (default), only fires matching one of the selected types are returned.
+#' If `FALSE`, fires not matching any selected feature types are returned.
+#' @param return_osm Logical. If `TRUE`, the function returns both the classified fires and the queried OSM polygons
+#' as a list. Default is `FALSE`.
+#'
+#' @return Either a filtered `sf` object of fire points with a new `fire_type` column, or a list with `firms` and `osm` if `return_osm = TRUE`.
+#'
+#' @importFrom osmdata opq add_osm_feature osmdata_sf
+#' @importFrom sf st_crs st_transform st_buffer st_union st_make_valid st_cast st_as_sf st_bbox st_intersects
+#' @importFrom dplyr bind_rows
+#' @export
 
-fetch_osm <- function(firms_sf, feature_types = c("natural", "agriculture", "urban", "industrial", "military", "waste", "parks", "airport"), must_be_in = TRUE) {
+
+fetch_osm <- function(firms_sf,
+                      feature_types = c("natural", "agriculture", "urban", "industrial", "military", "waste", "parks", "airport"),
+                      must_be_in = TRUE,
+                      return_osm = FALSE) {
+
   feature_types <- match.arg(feature_types, several.ok = TRUE)
 
   # Define OSM filters
@@ -27,23 +52,21 @@ fetch_osm <- function(firms_sf, feature_types = c("natural", "agriculture", "urb
   }
 
   # Step 1: Buffer each fire location
-  firms_buffered <- st_buffer(firms_sf, dist = ifelse(nrow(firms_sf) > 0 &&
-                                                        "confidence" %in% colnames(firms_sf) & all(firms_sf$confidence <= 100), 187.5, 500))
+  buffer_dist <- ifelse(nrow(firms_sf) > 0 &&
+                          "confidence" %in% colnames(firms_sf) && all(firms_sf$confidence <= 100),
+                        187.5, 500)
+  firms_buffered <- st_buffer(firms_sf, dist = buffer_dist)
 
-  # Step 2: Cluster nearby fires to reduce queries
-  firms_clustered <- st_union(firms_buffered)
-  fire_groups <- st_cast(firms_clustered, "POLYGON")
+  # Step 2: Group nearby fires (via spatial union of overlapping buffers)
+  fire_groups <- st_make_valid(st_union(firms_buffered)) %>%
+    st_cast("POLYGON") %>%
+    st_as_sf()
 
-  # Ensure fire_groups still has a valid geometry column
-  if (!inherits(fire_groups, "sf")) {
-    fire_groups <- st_as_sf(fire_groups)
-  }
+  # Step 3: Query OSM
+  all_osm <- list()
 
-  # Step 3: Query OSM for each **fire cluster** instead of each fire
-  osm_polygons <- NULL
-
-  for (i in seq_len(length(fire_groups))) {
-    fire_bbox <- st_bbox(fire_groups[i])
+  for (i in seq_len(nrow(fire_groups))) {
+    fire_bbox <- st_bbox(fire_groups[i, ])
 
     for (feature_type in feature_types) {
       selected_filters <- osm_filters[[feature_type]]
@@ -52,25 +75,23 @@ fetch_osm <- function(firms_sf, feature_types = c("natural", "agriculture", "urb
         value <- selected_filters[[key]]
 
         tryCatch({
-          osm_query <- opq(bbox = fire_bbox, timeout = 120) %>%
+          query <- opq(bbox = fire_bbox, timeout = 120) %>%
             add_osm_feature(key = key, value = value) %>%
             osmdata_sf()
 
-          # Extract only valid polygons
-          osm_data <- NULL
-          if (!is.null(osm_query$osm_polygons) && nrow(osm_query$osm_polygons) > 0) {
-            osm_data <- osm_query$osm_polygons
-          } else if (!is.null(osm_query$osm_multipolygons) && nrow(osm_query$osm_multipolygons) > 0) {
-            osm_data <- osm_query$osm_multipolygons
+          osm_data <- if (!is.null(query$osm_polygons) && nrow(query$osm_polygons) > 0) {
+            query$osm_polygons
+          } else if (!is.null(query$osm_multipolygons) && nrow(query$osm_multipolygons) > 0) {
+            query$osm_multipolygons
+          } else {
+            NULL
           }
 
-          # Ensure OSM data has a geometry column before merging
-          if (!is.null(osm_data) && inherits(osm_data, "sf")) {
-            if (!"geometry" %in% colnames(osm_data)) {
-              st_geometry(osm_data) <- "geometry"
-            }
-            osm_polygons <- if (is.null(osm_polygons)) osm_data else dplyr::bind_rows(osm_polygons, osm_data)
+          if (!is.null(osm_data)) {
+            osm_data$feature_type <- feature_type
+            all_osm[[length(all_osm) + 1]] <- osm_data
           }
+
         }, error = function(e) {
           message("Error fetching OSM data for fire cluster ", i, ": ", e$message)
         })
@@ -79,19 +100,22 @@ fetch_osm <- function(firms_sf, feature_types = c("natural", "agriculture", "urb
   }
 
   # Step 4: Classify Fires Based on OSM Intersections
-  if (!is.null(osm_polygons) && inherits(osm_polygons, "sf")) {
-    intersects_matrix <- st_intersects(firms_buffered, osm_polygons, sparse = FALSE)
-    fire_labels <- rep("unknown", nrow(firms_sf))
+  if (length(all_osm) > 0) {
+    osm_polygons <- do.call(dplyr::bind_rows, all_osm)
+    osm_polygons <- st_make_valid(osm_polygons)
 
-    for (i in seq_along(feature_types)) {
-      feature <- feature_types[i]
-      feature_intersects <- apply(intersects_matrix, 1, function(row) any(row))
-      fire_labels[feature_intersects] <- feature
+    firms_sf$fire_type <- "unknown"
+
+    for (feature in feature_types) {
+      sub_osm <- osm_polygons[osm_polygons$feature_type == feature, ]
+      if (nrow(sub_osm) > 0) {
+        intersects <- st_intersects(firms_buffered, sub_osm, sparse = FALSE)
+        matches <- apply(intersects, 1, any)
+        firms_sf$fire_type[matches] <- feature
+      }
     }
 
-    firms_sf$fire_type <- fire_labels
-
-    # Step 5: Apply Inclusion or Exclusion Filter
+    # Step 5: Inclusion or Exclusion
     if (must_be_in) {
       firms_sf <- firms_sf[firms_sf$fire_type %in% feature_types, ]
     } else {
@@ -99,10 +123,12 @@ fetch_osm <- function(firms_sf, feature_types = c("natural", "agriculture", "urb
     }
 
     message("Fires classified based on OSM features.")
-    return(firms_sf)
+    return(if (return_osm) list(firms = firms_sf, osm = osm_polygons) else firms_sf)
+
   } else {
     message("No relevant OSM features found; classifying fires as 'unknown'.")
     firms_sf$fire_type <- "unknown"
     return(firms_sf)
   }
 }
+

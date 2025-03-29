@@ -1,3 +1,20 @@
+#' Plot raw FIRMS fire detections with brightness and FRP
+#'
+#' This function visualizes FIRMS fire detections (from VIIRS or MODIS) on a base map.
+#' Fire points are color-coded by brightness (`brightness` or `bright_ti4`, depending on the dataset)
+#' and scaled in size by Fire Radiative Power (`frp`).
+#'
+#' @param firms_sf An `sf` object containing FIRMS fire detections. Must include a `brightness` or `bright_ti4` column,
+#' and an `frp` column for Fire Radiative Power.
+#' @param base_map Optional. An `sf` object to use as the base map. If `NULL`, a cropped country-level base map from `rnaturalearth` will be used.
+#'
+#' @return A `ggplot` object displaying fire points with brightness and FRP on a zoomed map.
+#'
+#' @importFrom ggplot2 ggplot geom_sf geom_point aes scale_color_gradient scale_size coord_sf labs theme_minimal
+#' @importFrom sf st_coordinates st_bbox st_intersects
+#' @importFrom rnaturalearth ne_countries
+#' @export
+#'
 plot_firms <- function(firms_sf, base_map = NULL) {
   if (!inherits(firms_sf, "sf")) {
     stop("Error: firms_sf must be an sf object.")

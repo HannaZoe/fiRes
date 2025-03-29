@@ -1,24 +1,18 @@
-# Welcome to fiRes, an R package that helps you to access and process NASAs FIRMS dataset more easily
-
-# Author Hanna Schulten
-# Last updated: 17.03.2025
-
-
-# Library Collection
-library(sf)  # Spatial handling
-library(dplyr)  # Filtering
-library(osmdata)
-
-# 1. Function: Fetching and pre-filtering FIRMS Data
-
-# Variables Overview:
-# "api_key" = Can be recived via NASA https://firms.modaps.eosdis.nasa.gov/api/map_key
-# "region" = shapefiles as input that define the aoi
-# "start_date" = Beginning date of intrest
-# "end_date" last date of interest
-# Noteworthy -> 10 day maximum per request sent
-# "dataset" = User can define whether they want VIIRS or MODIS dataset
-# "confidence_level" = Optional filter that allows to define confidence of interest
+#' Fetch FIRMS fire data from NASA's FIRMS API
+#'
+#' This function retrieves fire detection data from NASA's FIRMS (Fire Information for Resource Management System) API
+#' based on a specified region, time range, and dataset. If the request exceeds 10 days, it will automatically
+#' split the request into multiple API calls to respect the API limits.
+#'
+#' @param api_key Character. Your NASA API key. You can register for one at \url{https://firms.modaps.eosdis.nasa.gov/api/map_key}.
+#' @param region_sf An `sf` object representing the area of interest. It will be reprojected to WGS 84 if needed.
+#' @param start_date Start date of the time range to fetch fire data (in "YYYY-MM-DD" format).
+#' @param end_date End date of the time range to fetch fire data (in "YYYY-MM-DD" format).
+#' @param dataset Character. Choose between `"VIIRS_SNPP_NRT"` or `"MODIS_NRT"`. Defaults to `"VIIRS_SNPP_NRT"`.
+#' @param confidence_level Optional. Numeric filter for confidence level (depending on the dataset).
+#'
+#' @return An `sf` object containing fire detections within the selected time range and area.
+#' @export
 
 fetch_firms <- function(api_key, region_sf, start_date, end_date,
                              dataset = c("VIIRS_SNPP_NRT", "MODIS_NRT"),
