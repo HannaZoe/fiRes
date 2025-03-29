@@ -12,7 +12,8 @@
 #' @param confidence_level Optional. A character or numeric vector defining the confidence levels to filter.
 #' For MODIS, use `"l"`, `"n"`, `"h"`. For VIIRS, use numeric thresholds.
 #' @param bbox_str A comma-separated string of the bounding box coordinates (xmin, ymin, xmax, ymax).
-#'
+#' @importFrom sf st_within
+
 #' @return An `sf` object with fire detections that fall inside the given region and match the confidence filter, or `NULL` if no data was found.
 #' @keywords internal
 #' @noRd
