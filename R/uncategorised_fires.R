@@ -2,6 +2,7 @@
 #'
 #' This function compares a raw FIRMS fire dataset with a list of previously classified fire points.
 #' It returns only those fire detections that were not assigned a classification (i.e., did not appear in any of the classified datasets).
+#' Also prints a classification summary.
 #'
 #' @param firms_sf An `sf` object containing the original FIRMS fire detections.
 #' @param classified_firms_list A list of `sf` objects, each containing a subset of `firms_sf` with fire classifications (e.g., from `fetch_osm()`).
@@ -27,13 +28,29 @@ uncategorized_fires <- function(firms_sf, classified_firms_list) {
 
   # Identify fires in the original dataset that are NOT in the classified dataset
   uncategorized_fires <- firms_sf[!firms_sf$geometry %in% classified_fires$geometry, ]
-
-  # Assign "unknown" as fire_type
   uncategorized_fires$fire_type <- "unknown"
 
-  message(nrow(uncategorized_fires), " uncategorized fires found.")
+  # --- Summary message ---
+  total_fires <- nrow(firms_sf)
+  total_classified <- nrow(classified_fires)
+  total_uncategorized <- nrow(uncategorized_fires)
+
+  message("FIRMS Fire Classification Summary:")
+  message("• Total fires: ", total_fires)
+  message("• Classified: ", total_classified)
+  message("• Uncategorized: ", total_uncategorized)
+
+  # Fire type breakdown
+  if ("fire_type" %in% colnames(classified_fires)) {
+    fire_type_counts <- table(classified_fires$fire_type)
+    for (type in names(fire_type_counts)) {
+      message("  - ", type, ": ", fire_type_counts[[type]])
+    }
+  }
+
   return(uncategorized_fires)
 }
+
 
 
 
