@@ -37,8 +37,8 @@ uncategorized_fires <- function(firms_sf, classified_firms_list) {
 
   message("FIRMS Fire Classification Summary:")
   message("• Total fires: ", total_fires)
-  message("• Classified: ", total_classified)
   message("• Uncategorized: ", total_uncategorized)
+  message("• Classified: ", total_classified)
 
   # Fire type breakdown
   if ("fire_type" %in% colnames(classified_fires)) {

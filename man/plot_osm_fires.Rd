@@ -2,22 +2,28 @@
 % Please edit documentation in R/plot_categorised_fires.R
 \name{plot_osm_fires}
 \alias{plot_osm_fires}
-\title{Plot categorized FIRMS fire detections on a map}
+\title{Plot classified and uncategorized FIRMS fire detections}
 \usage{
-plot_osm_fires(firms_list, firms_uncategorized = NULL, base_map = NULL)
+plot_osm_fires(
+  firms_list,
+  firms_uncategorized = NULL,
+  base_map = NULL,
+  include_uncategorized = TRUE
+)
 }
 \arguments{
-\item{firms_list}{A list of \code{sf} point objects. Each entry should represent a set of FIRMS fire detections with a \code{fire_type} column.}
+\item{firms_list}{A list of \code{sf} objects, each containing fire detections with a \code{fire_type} column.}
 
-\item{firms_uncategorized}{Optional. An \code{sf} object with uncategorized fire detections (e.g., raw FIRMS data before classification).
-These will be shown as gray background circles on the map.}
+\item{firms_uncategorized}{Optional. An \code{sf} object of uncategorized fires to plot in gray.}
 
-\item{base_map}{Optional. An \code{sf} object to use as the base map. If not provided, a country-level map will be fetched from \code{rnaturalearth} and cropped to fire extent.}
+\item{base_map}{Optional. Either an \code{sf} object or a file path to a shapefile/GPKG/etc. If NULL, a Natural Earth map is used.}
+
+\item{include_uncategorized}{Logical. Whether to include uncategorized fires in the plot. Default is TRUE.}
 }
 \value{
-A \code{ggplot} object displaying the fire detections on a map with color-coded classifications.
+A \code{ggplot} object.
 }
 \description{
-This function visualizes categorized FIRMS fire points (e.g., from \code{fetch_osm()}) on a base map using \code{ggplot2}.
-Fires are colored by their \code{fire_type} classification. Optional uncategorized fire points can be shown as gray circles.
+This function visualizes categorized fire detections (from \code{fetch_osm}) and optionally any uncategorized ones.
+Points are color-coded by their \code{fire_type}. You can supply a custom background map.
 }

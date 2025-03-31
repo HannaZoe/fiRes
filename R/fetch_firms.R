@@ -15,7 +15,7 @@
 #' @export
 
 fetch_firms <- function(api_key, region_sf, start_date, end_date,
-                        dataset = c("VIIRS_SNPP_NRT", "MODIS_NRT", "both"),
+                        dataset = c("VIIRS_SNPP_NRT", "MODIS_NRT"),
                         confidence_level = NULL) {
 
   dataset <- match.arg(dataset)
