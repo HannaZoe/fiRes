@@ -13,6 +13,7 @@
 #' @importFrom ggplot2 ggplot geom_sf aes scale_color_manual coord_sf labs theme_minimal
 #' @importFrom sf st_crs st_transform st_is_empty st_cast st_geometry_type st_geometry read_sf
 #' @importFrom rnaturalearth ne_countries
+#'
 #' @export
 
 plot_osm_fires <- function(firms_list,
@@ -37,7 +38,7 @@ plot_osm_fires <- function(firms_list,
   all_firms_sf <- do.call(rbind, firms_list)
 
   if (nrow(all_firms_sf) == 0) {
-    stop("No fire points found — cannot plot.")
+    stop("No fire points found - cannot plot.")
   }
 
   # Handle base map input

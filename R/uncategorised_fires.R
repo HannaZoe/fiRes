@@ -1,4 +1,4 @@
-#' Identify uncategorized fires
+#' Identify uncategorised fires
 #'
 #' This function compares a raw FIRMS fire dataset with a list of previously classified fire points.
 #' It returns only those fire detections that were not assigned a classification (i.e., did not appear in any of the classified datasets).
@@ -14,7 +14,7 @@
 #'
 #' @export
 #'
-uncategorized_fires <- function(firms_sf, classified_firms_list) {
+uncategorised_fires <- function(firms_sf, classified_firms_list) {
   if (!inherits(firms_sf, "sf")) {
     stop("Error: firms_sf must be an sf object.")
   }
@@ -32,9 +32,9 @@ uncategorized_fires <- function(firms_sf, classified_firms_list) {
 
   # Summary message
   message("FIRMS Fire Classification Summary:")
-  message("• Total fires: ", nrow(firms_sf))
-  message("• Classified: ", nrow(classified_fires))
-  message("• Uncategorized: ", nrow(uncategorized_fires))
+  message("Total fires: ", nrow(firms_sf))
+  message("Classified: ", nrow(classified_fires))
+  message("Uncategorized: ", nrow(uncategorized_fires))
 
   if ("fire_type" %in% colnames(classified_fires)) {
     fire_type_counts <- table(classified_fires$fire_type)

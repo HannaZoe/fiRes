@@ -4,7 +4,7 @@
 #' Automatically converts `acq_date` to Date if necessary, and assigns fire season labels accordingly.
 #'
 #' @param firms_sf An `sf` object with an `acq_date` column (character or Date).
-#' @param fire_seasons A named list, where each element is a numeric vector of month values (1–12).
+#' @param fire_seasons A named list, where each element is a numeric vector of month values (1-12).
 #' The names will be used as fire season labels.
 #'
 #' @return The original `sf` object with an added `fire_season` column (as factor).
@@ -20,7 +20,7 @@ fire_seasons <- function(firms_sf, fire_seasons) {
 
   # Validate fire_seasons input
   if (!is.list(fire_seasons) || is.null(names(fire_seasons)) || any(names(fire_seasons) == "")) {
-    stop("fire_seasons must be a named list with each element being a vector of month numbers (1–12).")
+    stop("fire_seasons must be a named list with each element being a vector of month numbers (1-12).")
   }
 
   # Ensure acq_date is Date

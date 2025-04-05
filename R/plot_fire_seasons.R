@@ -11,7 +11,7 @@
 #' @importFrom ggplot2 ggplot aes geom_bar geom_sf labs scale_fill_brewer scale_color_brewer theme_minimal
 #' @importFrom sf st_drop_geometry st_crs st_transform read_sf
 #' @importFrom rnaturalearth ne_countries
-#' #' @importFrom rlang .data
+#' @importFrom rlang .data
 #'
 #' @export
 

@@ -12,7 +12,7 @@
 #'
 #' @export
 
-calculate_fire_frequency <- function(firms_sf, resolution_km = 1) {
+fire_frequency <- function(firms_sf, resolution_km = 1) {
 
   if (!inherits(firms_sf, "sf")) stop("Input must be an sf object")
 
