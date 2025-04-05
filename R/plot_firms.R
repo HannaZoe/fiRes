@@ -1,19 +1,19 @@
-#' Plot raw FIRMS fire detections with brightness and FRP
+#' Plot FIRMS fire detections with brightness and FRP
 #'
-#' This function visualizes FIRMS fire detections (from VIIRS or MODIS) on a base map.
-#' Fire points are color-coded by brightness (`brightness` or `bright_ti4`, depending on the dataset)
-#' and scaled in size by Fire Radiative Power (`frp`).
+#' Visualizes FIRMS fire points on a basemap, color-coded by brightness and scaled by Fire Radiative Power (FRP).
+#' Accepts both VIIRS (`bright_ti4`) and MODIS (`brightness`) data automatically.
 #'
-#' @param firms_sf An `sf` object containing FIRMS fire detections. Must include a `brightness` or `bright_ti4` column,
-#' and an `frp` column for Fire Radiative Power.
-#' @param base_map Optional. Either an `sf` object or a file path to a shapefile/GPKG/etc. If `NULL`, a Natural Earth country map is used.
+#' @param firms_sf An `sf` object of fire detections. Must include a brightness column (`bright_ti4` or `brightness`) and a `frp` column.
+#' @param base_map Optional. Either an `sf` object or a file path (e.g., to shapefile or GeoPackage). If `NULL`, uses Natural Earth.
 #'
-#' @return A `ggplot` object displaying fire points with brightness and FRP on a zoomed map.
+#' @return A `ggplot` object showing the fire detections.
 #'
 #' @importFrom ggplot2 ggplot geom_sf aes scale_color_gradient scale_size coord_sf labs theme_minimal
-#' @importFrom sf st_crs st_transform st_is_empty read_sf
+#' @importFrom sf st_crs st_transform st_is_empty read_sf st_geometry
 #' @importFrom rnaturalearth ne_countries
+#'
 #' @export
+
 plot_firms <- function(firms_sf, base_map = NULL) {
   if (!inherits(firms_sf, "sf")) {
     stop("Error: firms_sf must be an sf object.")
@@ -56,7 +56,7 @@ plot_firms <- function(firms_sf, base_map = NULL) {
     geom_sf(data = base_map, fill = "gray90", color = "black", lwd = 0.3) +
     geom_sf(
       data = firms_sf,
-      aes(color = .data[[brightness_col]], size = frp),
+      aes(color = .data[[brightness_col]], size = .data$frp),
       alpha = 0.7
     ) +
     scale_color_gradient(low = "yellow", high = "red", name = "Brightness") +

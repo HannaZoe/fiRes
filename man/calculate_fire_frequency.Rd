@@ -15,5 +15,5 @@ calculate_fire_frequency(firms_sf, resolution_km = 1)
 An sf object with \code{n_fires} column showing number of fires per cell.
 }
 \description{
-Groups fire detections by spatial cell and returns frequency of fire events.
+Groups fire detections by spatial cell using a true distance grid in UTM coordinates.
 }

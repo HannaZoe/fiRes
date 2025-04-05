@@ -2,21 +2,19 @@
 % Please edit documentation in R/plot_firms.R
 \name{plot_firms}
 \alias{plot_firms}
-\title{Plot raw FIRMS fire detections with brightness and FRP}
+\title{Plot FIRMS fire detections with brightness and FRP}
 \usage{
 plot_firms(firms_sf, base_map = NULL)
 }
 \arguments{
-\item{firms_sf}{An \code{sf} object containing FIRMS fire detections. Must include a \code{brightness} or \code{bright_ti4} column,
-and an \code{frp} column for Fire Radiative Power.}
+\item{firms_sf}{An \code{sf} object of fire detections. Must include a brightness column (\code{bright_ti4} or \code{brightness}) and a \code{frp} column.}
 
-\item{base_map}{Optional. Either an \code{sf} object or a file path to a shapefile/GPKG/etc. If \code{NULL}, a Natural Earth country map is used.}
+\item{base_map}{Optional. Either an \code{sf} object or a file path (e.g., to shapefile or GeoPackage). If \code{NULL}, uses Natural Earth.}
 }
 \value{
-A \code{ggplot} object displaying fire points with brightness and FRP on a zoomed map.
+A \code{ggplot} object showing the fire detections.
 }
 \description{
-This function visualizes FIRMS fire detections (from VIIRS or MODIS) on a base map.
-Fire points are color-coded by brightness (\code{brightness} or \code{bright_ti4}, depending on the dataset)
-and scaled in size by Fire Radiative Power (\code{frp}).
+Visualizes FIRMS fire points on a basemap, color-coded by brightness and scaled by Fire Radiative Power (FRP).
+Accepts both VIIRS (\code{bright_ti4}) and MODIS (\code{brightness}) data automatically.
 }

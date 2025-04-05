@@ -2,7 +2,7 @@
 % Please edit documentation in R/uncategorised_fires.R
 \name{uncategorized_fires}
 \alias{uncategorized_fires}
-\title{Identify uncategorized fire detections}
+\title{Identify uncategorized fires}
 \usage{
 uncategorized_fires(firms_sf, classified_firms_list)
 }
@@ -17,5 +17,5 @@ An \code{sf} object with uncategorized fire points. A \code{fire_type} column is
 \description{
 This function compares a raw FIRMS fire dataset with a list of previously classified fire points.
 It returns only those fire detections that were not assigned a classification (i.e., did not appear in any of the classified datasets).
-Also prints a classification summary.
+Uses spatial equality to identify overlaps. Also prints a classification summary.
 }

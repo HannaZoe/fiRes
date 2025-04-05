@@ -7,13 +7,15 @@
 fire_seasons(firms_sf, fire_seasons)
 }
 \arguments{
-\item{firms_sf}{An sf object with an \code{acq_date} column.}
+\item{firms_sf}{An \code{sf} object with an \code{acq_date} column (character or Date).}
 
-\item{fire_seasons}{A named list, where each element is a vector of month numbers (1–12).}
+\item{fire_seasons}{A named list, where each element is a numeric vector of month values (1–12).
+The names will be used as fire season labels.}
 }
 \value{
-The input \code{sf} object with an added \code{fire_season} column.
+The original \code{sf} object with an added \code{fire_season} column (as factor).
 }
 \description{
 Adds a \code{fire_season} column based on user-defined month groupings.
+Automatically converts \code{acq_date} to Date if necessary, and assigns fire season labels accordingly.
 }

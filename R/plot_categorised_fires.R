@@ -11,10 +11,10 @@
 #' @return A `ggplot` object.
 #'
 #' @importFrom ggplot2 ggplot geom_sf aes scale_color_manual coord_sf labs theme_minimal
-#' @importFrom sf st_crs st_transform st_is_empty st_cast read_sf
+#' @importFrom sf st_crs st_transform st_is_empty st_cast st_geometry_type st_geometry read_sf
 #' @importFrom rnaturalearth ne_countries
 #' @export
-#'
+
 plot_osm_fires <- function(firms_list,
                            firms_uncategorized = NULL,
                            base_map = NULL,

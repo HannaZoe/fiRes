@@ -1,18 +1,23 @@
-
 #' Fetch FIRMS fire data from NASA's FIRMS API
 #'
-#' This function retrieves fire detection data from NASA's FIRMS (Fire Information for Resource Management System) API
-#' based on a specified region, time range, and dataset. If the request exceeds 10 days, it will automatically
-#' split the request into multiple API calls to respect the API limits.
+#' This function retrieves fires detected by NASA's FIRMS (Fire Information for Resource Management System) via their API
+#' For more information visit \url{https://firms.modaps.eosdis.nasa.gov/api/}.
+#' Data will be based on a specified region, time range, and dataset.
+#' If the request exceeds 10 days, it will automatically split the request into multiple calls to respect the API limits.
 #'
 #' @param api_key Character. Your NASA API key. You can register for one at \url{https://firms.modaps.eosdis.nasa.gov/api/map_key}.
 #' @param region_sf An `sf` object representing the area of interest. It will be reprojected to WGS 84 if needed.
 #' @param start_date Start date of the time range to fetch fire data (in "YYYY-MM-DD" format).
 #' @param end_date End date of the time range to fetch fire data (in "YYYY-MM-DD" format).
 #' @param dataset Character. Choose between `"VIIRS_SNPP_NRT"` or `"MODIS_NRT"`. Defaults to `"VIIRS_SNPP_NRT"`.
-#' @param confidence_level Optional. Numeric filter for confidence level (depending on the dataset).
+#' @param confidence_level Optional. Filter for confidence level using `"l"`, `"n"`, `"h"`.
+#' MODIS confidence level (numeric, 0-100) is automatically converted to these characters.
 #'
 #' @return An `sf` object containing fire detections within the selected time range and area.
+#'
+#' #' @importFrom sf st_crs st_transform st_bbox
+#' @importFrom httr GET content
+#'
 #' @export
 
 fetch_firms <- function(api_key, region_sf, start_date, end_date,
@@ -21,6 +26,7 @@ fetch_firms <- function(api_key, region_sf, start_date, end_date,
 
   dataset <- match.arg(dataset)
 
+  # Warning in case of User Error
   if (!inherits(region_sf, "sf")) {
     stop("Error: The input region must be an sf object.")
   }
@@ -41,6 +47,8 @@ fetch_firms <- function(api_key, region_sf, start_date, end_date,
     return(fetch_firms_chunk(api_key, region_sf, start_date, end_date, dataset, confidence_level, bbox_str))
   }
 
+  # NASAs API is limited to data chunks of 10 days at a time
+  # This fixes it
   message("Your requested date range exceeds 10 days.\nSplitting data into 10-day chunks...")
 
   all_fires <- NULL

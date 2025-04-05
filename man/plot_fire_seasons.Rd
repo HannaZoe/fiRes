@@ -7,15 +7,14 @@
 plot_fire_seasons(firms_sf, base_map = NULL)
 }
 \arguments{
-\item{firms_sf}{An sf object with columns \code{fire_type} and \code{fire_season}}
+\item{firms_sf}{An \code{sf} object with at least two columns: \code{fire_type} and \code{fire_season}.}
 
-\item{base_map}{Optional. Background map (sf object or file path). Default is Natural Earth.}
-
-\item{fire_season_order}{Optional. A character vector with the desired fire season order (e.g., names from classify_fire_seasons)}
+\item{base_map}{Optional. An \code{sf} object or file path to a shapefile/GPKG. If \code{NULL}, Natural Earth data is used.}
 }
 \value{
-A list with two ggplot objects: $bar_plot and $map_plot
+A list of two \code{ggplot} objects: \verb{$bar_plot} (stacked bar chart) and \verb{$map_plot} (spatial plot by season).
 }
 \description{
-Plot fire season statistics and spatial distribution
+This function generates two plots: a bar chart showing the number of fires by fire season and land use type,
+and a map visualizing the spatial distribution of fires by fire season.
 }

@@ -24,13 +24,17 @@ fetch_firms(
 
 \item{dataset}{Character. Choose between \code{"VIIRS_SNPP_NRT"} or \code{"MODIS_NRT"}. Defaults to \code{"VIIRS_SNPP_NRT"}.}
 
-\item{confidence_level}{Optional. Numeric filter for confidence level (depending on the dataset).}
+\item{confidence_level}{Optional. Filter for confidence level using \code{"l"}, \code{"n"}, \code{"h"}.
+MODIS confidence level (numeric, 0-100) is automatically converted to these characters.}
 }
 \value{
 An \code{sf} object containing fire detections within the selected time range and area.
+
+#' @importFrom sf st_crs st_transform st_bbox
 }
 \description{
-This function retrieves fire detection data from NASA's FIRMS (Fire Information for Resource Management System) API
-based on a specified region, time range, and dataset. If the request exceeds 10 days, it will automatically
-split the request into multiple API calls to respect the API limits.
+This function retrieves fires detected by NASA's FIRMS (Fire Information for Resource Management System) via their API
+For more information visit \url{https://firms.modaps.eosdis.nasa.gov/api/}.
+Data will be based on a specified region, time range, and dataset.
+If the request exceeds 10 days, it will automatically split the request into multiple calls to respect the API limits.
 }

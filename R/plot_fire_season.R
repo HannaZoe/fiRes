@@ -1,10 +1,18 @@
 #' Plot fire season statistics and spatial distribution
 #'
-#' @param firms_sf An sf object with columns `fire_type` and `fire_season`
-#' @param base_map Optional. Background map (sf object or file path). Default is Natural Earth.
-#' @param fire_season_order Optional. A character vector with the desired fire season order (e.g., names from classify_fire_seasons)
+#' This function generates two plots: a bar chart showing the number of fires by fire season and land use type,
+#' and a map visualizing the spatial distribution of fires by fire season.
 #'
-#' @return A list with two ggplot objects: $bar_plot and $map_plot
+#' @param firms_sf An `sf` object with at least two columns: `fire_type` and `fire_season`.
+#' @param base_map Optional. An `sf` object or file path to a shapefile/GPKG. If `NULL`, Natural Earth data is used.
+#'
+#' @return A list of two `ggplot` objects: `$bar_plot` (stacked bar chart) and `$map_plot` (spatial plot by season).
+#'
+#' @importFrom ggplot2 ggplot aes geom_bar geom_sf labs scale_fill_brewer scale_color_brewer theme_minimal
+#' @importFrom sf st_drop_geometry st_crs st_transform read_sf
+#' @importFrom rnaturalearth ne_countries
+#' #' @importFrom rlang .data
+#'
 #' @export
 
 plot_fire_seasons <- function(firms_sf, base_map = NULL) {
@@ -17,7 +25,7 @@ plot_fire_seasons <- function(firms_sf, base_map = NULL) {
   df <- sf::st_drop_geometry(firms_sf)
 
   # --- Bar chart ---
-  bar_plot <- ggplot(df, aes(x = fire_season, fill = fire_type)) +
+  bar_plot <- ggplot(df, aes(x = .data$fire_season, fill = .data$fire_type)) +
     geom_bar(position = "stack") +
     scale_fill_brewer(palette = "Set2") +
     labs(

@@ -1,8 +1,8 @@
 #' Helper function to fetch a single chunk of FIRMS fire data
 #'
-#' This internal function retrieves a chunk (up to 10 days) of FIRMS fire data from NASA's FIRMS API
-#' for a specific bounding box and time range. It also applies spatial filtering based on a user-defined region
-#' and optionally filters fire points based on confidence levels.
+#' This internal function (helper) retrieves a chunk (10 days) of FIRMS fire data from NASA's FIRMS API.
+#' Data is always retrived for a specific bounding box and time range.
+#' Optional filtering of fire points based on confidence levels can be applied.
 #'
 #' @param api_key Character. Your NASA API key.
 #' @param region_sf An `sf` object defining the region of interest. Must be in WGS 84.
@@ -12,7 +12,13 @@
 #' @param confidence_level Optional. A character or numeric vector defining the confidence levels to filter.
 #' For VIIRS, use `"l"`, `"n"`, `"h"`. For MODIS, numeric values will be translated to those categories.
 #' @param bbox_str A comma-separated string of the bounding box coordinates (xmin, ymin, xmax, ymax).
+#'
 #' @return An `sf` object with fire detections that fall inside the given region and match the confidence filter, or `NULL` if no data was found.
+#'
+#' @importFrom sf st_as_sf st_within
+#' @importFrom dplyr filter mutate case_when
+#' @importFrom utils read.csv download.file
+#'
 #' @keywords internal
 #' @noRd
 
@@ -24,7 +30,7 @@ fetch_firms_chunk <- function(api_key, region_sf, start_date, end_date, dataset,
   url <- paste0(base_url, api_key, "/", dataset, "/", bbox_str, "/", day_range, "/")
   temp_file <- tempfile(fileext = ".csv")
 
-  # --- Suppressed Download ---
+  # Supress rather long download message that otherwise appears in Console
   suppressMessages(
     suppressWarnings(
       download.file(url, temp_file, mode = "wb", quiet = TRUE)
@@ -32,12 +38,12 @@ fetch_firms_chunk <- function(api_key, region_sf, start_date, end_date, dataset,
   )
 
   tryCatch({
-    # --- Suppressed Read Warning ---
+    # Another supression of Console messages
     firms_data <- suppressWarnings(read.csv(temp_file, stringsAsFactors = FALSE))
 
     if (nrow(firms_data) == 0) {
-      # You can remove this message for silent mode
-      # message("No fire data available for this chunk.")
+
+      message("No fire data available for this chunk.")
       return(NULL)
     }
 
@@ -50,7 +56,7 @@ fetch_firms_chunk <- function(api_key, region_sf, start_date, end_date, dataset,
       return(NULL)
     }
 
-    # ---- DATASET DETECTION ----
+    # Detects whether dataset is MODIS or VIIRS based on unique column names
     is_viirs <- "bright_ti4" %in% names(firms_data)
     is_modis <- "brightness" %in% names(firms_data)
 
@@ -64,18 +70,7 @@ fetch_firms_chunk <- function(api_key, region_sf, start_date, end_date, dataset,
       detected_dataset <- "MODIS"
     }
 
-    # --- Optional message: keep or comment out
-    # message("Detected dataset: ", detected_dataset)
-
-    # ---- Verify expected dataset ----
-    if (dataset != "both") {
-      expected <- if (dataset == "MODIS_NRT") "MODIS" else "VIIRS"
-      if (detected_dataset != expected) {
-        warning(paste("Expected", expected, "data but received", detected_dataset, "instead. Proceeding anyway."))
-      }
-    }
-
-    # ---- CONFIDENCE FILTERING ----
+    # Application of confidence filtering
     if (!is.null(confidence_level)) {
       confidence_level <- as.character(unlist(confidence_level))
 

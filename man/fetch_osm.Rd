@@ -2,13 +2,15 @@
 % Please edit documentation in R/fetch_osm.R
 \name{fetch_osm}
 \alias{fetch_osm}
-\title{Classify fire points based on OpenStreetMap land cover types (Parallel)}
+\title{Classify fire points based on OpenStreetMap land cover types}
 \usage{
 fetch_osm(
   firms_sf,
   feature_types = c("natural", "agriculture", "urban", "industrial", "military", "waste",
     "parks", "airport"),
+  priority = NULL,
   must_be_in = TRUE,
+  dataset = c("VIIRS_SNPP_NRT", "MODIS_NRT"),
   return_osm = FALSE
 )
 }
@@ -16,18 +18,24 @@ fetch_osm(
 \item{firms_sf}{An \code{sf} object with fire locations (typically from \code{fetch_firms()}).}
 
 \item{feature_types}{Character vector of OSM feature types to classify by. Options include:
-\code{"natural"}, \code{"agriculture"}, \code{"urban"}, \code{"industrial"}, \code{"military"}, \code{"waste"}, \code{"parks"}, \code{"airport"}.}
+\code{"natural"}, \code{"agriculture"}, \code{"urban"}, \code{"industrial"}, \code{"military"}, \code{"waste"}, \code{"parks"}, \code{"airport"}.
+Fire points not matching any selected OSM category will be assigned the type 'unknown'}
 
-\item{must_be_in}{Logical. If \code{TRUE} (default), only fires that intersect with selected OSM features are returned.
-If \code{FALSE}, fires not matching any selected type are returned.}
+\item{priority}{Optional character vector to define the order in which overlapping OSM categories are assigned.
+Must be a subset of \code{feature_types}. If not provided, the order of \code{feature_types} is used.}
 
-\item{return_osm}{Logical. If \code{TRUE}, returns a list with classified fires and the OSM polygons. Default is \code{FALSE}.}
+\item{must_be_in}{Logical. If \code{TRUE}, only fires matching one of the selected feature types are returned.
+If \code{FALSE}, only unmatched fires are returned. Default is \code{TRUE}.}
+
+\item{dataset}{Character. Must be one of \code{"VIIRS_SNPP_NRT"} or \code{"MODIS_NRT"}. Used to determine buffer distance (375m or 1000m).}
+
+\item{return_osm}{Logical. If \code{TRUE}, returns a list with the classified fire points and the OSM polygons used. Default is \code{FALSE}.}
 }
 \value{
-An \code{sf} object with classified fire points (with a new \code{fire_type} column), or a list if \code{return_osm = TRUE}.
+An \code{sf} object with a \code{fire_type} column, or a list containing \verb{$firms} and \verb{$osm} if \code{return_osm = TRUE}.
 }
 \description{
-This function uses the Overpass API to query OpenStreetMap (OSM) for land cover features
-and classifies fire detections (e.g., from FIRMS) into user-defined land use types. It runs
-the feature type queries in parallel to speed up processing.
+This function uses the Overpass API to query OpenStreetMap (OSM) for land cover features.
+Applies user-choosen land use types to FIRMS dataset.
+Fire points are spatially buffered and classified based on intersection with OSM features.
 }
