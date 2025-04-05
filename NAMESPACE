@@ -3,7 +3,7 @@
 export(calculate_fire_frequency)
 export(fetch_firms)
 export(fetch_osm)
-export(fire_season)
+export(fire_seasons)
 export(plot_fire_frequency)
 export(plot_fire_seasons)
 export(plot_firms)

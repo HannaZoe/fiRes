@@ -1,3 +1,4 @@
+
 #' Fetch FIRMS fire data from NASA's FIRMS API
 #'
 #' This function retrieves fire detection data from NASA's FIRMS (Fire Information for Resource Management System) API
@@ -62,9 +63,3 @@ fetch_firms <- function(api_key, region_sf, start_date, end_date,
   message("Successfully retrieved all requested FIRMS data!")
   return(all_fires)
 }
-
-
-
-
-
-
