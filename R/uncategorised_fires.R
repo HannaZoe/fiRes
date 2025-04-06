@@ -13,8 +13,8 @@
 #' @importFrom dplyr bind_rows
 #'
 #' @export
-#'
-categorised_fires <- function(firms_sf, classified_firms_list) {
+
+uncategorised_fires <- function(firms_sf, classified_firms_list) {
   if (!inherits(firms_sf, "sf")) {
     stop("Error: firms_sf must be an sf object.")
   }

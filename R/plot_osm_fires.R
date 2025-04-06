@@ -76,9 +76,11 @@ plot_osm_fires <- function(firms_list,
     geom_sf(data = base_map, fill = "gray90", color = "black", lwd = 0.3) +
     geom_sf(
       data = all_firms_sf,
-      aes(color = fire_type_colors),
-      size = ifelse(all_firms_sf$fire_type == "unknown", 1, 2),
-      alpha = ifelse(all_firms_sf$fire_type == "unknown", 0.4, 0.7)
+      aes(
+        color = fire_type,
+        size = ifelse(fire_type == "unknown", 1, 2),
+        alpha = ifelse(fire_type == "unknown", 0.4, 0.7)
+      )
     ) +
     scale_color_manual(values = fire_type_colors, name = "Fire Classification") +
     coord_sf() +

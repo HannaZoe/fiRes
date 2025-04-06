@@ -8,7 +8,7 @@
 #'
 #' @return A list of two `ggplot` objects: `$bar_plot` (stacked bar chart) and `$map_plot` (spatial plot by season).
 #'
-#' @importFrom ggplot2 ggplot aes geom_bar geom_sf labs scale_fill_brewer scale_color_brewer theme_minimal
+#' @importFrom ggplot2 ggplot aes geom_bar geom_sf labs scale_fill_manual scale_color_brewer theme_minimal
 #' @importFrom sf st_drop_geometry st_crs st_transform read_sf
 #' @importFrom rnaturalearth ne_countries
 #' @importFrom rlang .data
@@ -40,7 +40,7 @@ plot_fire_seasons <- function(firms_sf, base_map = NULL) {
   # --- Bar chart ---
   bar_plot <- ggplot(df, aes(x = .data$fire_season, fill = .data$fire_type)) +
     geom_bar(position = "stack") +
-    scale_fill_brewer(palette = fire_type_colors) +
+    scale_fill_manual(values = fire_type_colors) +
     labs(
       title = "FIRMS Fires by Season and Land Use Type",
       x = "Fire Season", y = "Number of Fires",
