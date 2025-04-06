@@ -35,7 +35,7 @@ plot_fire_frequency <- function(fire_freq_sf, base_map = NULL) {
   # Plot
   ggplot() +
     geom_sf(data = base_map, fill = "gray95", color = "black", linewidth = 0.2) +
-    geom_sf(data = fire_freq_sf, aes(size = n_fires), color = "darkred", alpha = 0.6) +
+    geom_sf(data = fire_freq_sf, aes(size = .data$n_fires), color = "darkred", alpha = 0.6) +
     scale_size_continuous(name = "Number of Fires", range = c(1, 6)) +
     coord_sf(
       xlim = c(fire_bbox["xmin"], fire_bbox["xmax"]),

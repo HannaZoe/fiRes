@@ -58,11 +58,17 @@ plot_osm_fires <- function(firms_list,
     base_map <- sf::st_transform(base_map, sf::st_crs(all_firms_sf))
   }
 
-  # Fire type colors
-  fire_colors <- c(
-    "natural" = "green", "agriculture" = "yellow", "urban" = "blue",
-    "industrial" = "red", "military" = "purple", "waste" = "brown",
-    "parks" = "darkgreen", "airport" = "gray", "unknown" = "black"
+  # color scheme
+  fire_type_colors <- c(
+    "natural"     = "forestgreen",
+    "agriculture" = "goldenrod",
+    "urban"       = "steelblue",
+    "industrial"  = "firebrick",
+    "military"    = "purple",
+    "waste"       = "saddlebrown",
+    "parks"       = "darkolivegreen",
+    "airport"     = "gray50",
+    "unknown"     = "black"
   )
 
   # Build plot
@@ -70,11 +76,11 @@ plot_osm_fires <- function(firms_list,
     geom_sf(data = base_map, fill = "gray90", color = "black", lwd = 0.3) +
     geom_sf(
       data = all_firms_sf,
-      aes(color = fire_type),
+      aes(color = fire_type_colors),
       size = ifelse(all_firms_sf$fire_type == "unknown", 1, 2),
       alpha = ifelse(all_firms_sf$fire_type == "unknown", 0.4, 0.7)
     ) +
-    scale_color_manual(values = fire_colors, name = "Fire Classification") +
+    scale_color_manual(values = fire_type_colors, name = "Fire Classification") +
     coord_sf() +
     labs(
       title = "Classified FIRMS Fire Detections",

@@ -14,7 +14,7 @@
 #'
 #' @export
 #'
-uncategorised_fires <- function(firms_sf, classified_firms_list) {
+categorised_fires <- function(firms_sf, classified_firms_list) {
   if (!inherits(firms_sf, "sf")) {
     stop("Error: firms_sf must be an sf object.")
   }

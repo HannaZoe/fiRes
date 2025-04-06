@@ -24,10 +24,23 @@ plot_fire_seasons <- function(firms_sf, base_map = NULL) {
   # Drop geometry for bar chart
   df <- sf::st_drop_geometry(firms_sf)
 
+  # color scheme
+  fire_type_colors <- c(
+    "natural"     = "forestgreen",
+    "agriculture" = "goldenrod",
+    "urban"       = "steelblue",
+    "industrial"  = "firebrick",
+    "military"    = "purple",
+    "waste"       = "saddlebrown",
+    "parks"       = "darkolivegreen",
+    "airport"     = "gray50",
+    "unknown"     = "black"
+  )
+
   # --- Bar chart ---
   bar_plot <- ggplot(df, aes(x = .data$fire_season, fill = .data$fire_type)) +
     geom_bar(position = "stack") +
-    scale_fill_brewer(palette = "Set2") +
+    scale_fill_brewer(palette = fire_type_colors) +
     labs(
       title = "FIRMS Fires by Season and Land Use Type",
       x = "Fire Season", y = "Number of Fires",
