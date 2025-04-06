@@ -39,7 +39,7 @@ plot_fire_seasons <- function(firms_sf, base_map = NULL) {
 
   # --- Bar chart ---
   bar_plot <- ggplot(df, aes(x = .data$fire_season, fill = .data$fire_type)) +
-    geom_bar(position = "stack") +
+    geom_bar(position = "stack", , alpha=0.7) +
     scale_fill_manual(values = fire_type_colors) +
     labs(
       title = "FIRMS Fires by Season and Land Use Type",

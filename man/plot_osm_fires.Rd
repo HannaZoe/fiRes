@@ -14,7 +14,7 @@ plot_osm_fires(
 \arguments{
 \item{firms_list}{A list of \code{sf} objects, each containing fire detections with a \code{fire_type} column.}
 
-\item{firms_uncategorized}{Optional. An \code{sf} object of uncategorized fires to plot in gray.}
+\item{firms_uncategorized}{Optional. An \code{sf} object of uncategorized fires to plot in black and include in legend.}
 
 \item{base_map}{Optional. Either an \code{sf} object or a file path to a shapefile/GPKG/etc. If NULL, a Natural Earth map is used.}
 

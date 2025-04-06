@@ -4,7 +4,7 @@
 #' Points are color-coded by their `fire_type`. You can supply a custom background map.
 #'
 #' @param firms_list A list of `sf` objects, each containing fire detections with a `fire_type` column.
-#' @param firms_uncategorized Optional. An `sf` object of uncategorized fires to plot in gray.
+#' @param firms_uncategorized Optional. An `sf` object of uncategorized fires to plot in black and include in legend.
 #' @param base_map Optional. Either an `sf` object or a file path to a shapefile/GPKG/etc. If NULL, a Natural Earth map is used.
 #' @param include_uncategorized Logical. Whether to include uncategorized fires in the plot. Default is TRUE.
 #'
@@ -15,7 +15,6 @@
 #' @importFrom rnaturalearth ne_countries
 #'
 #' @export
-
 plot_osm_fires <- function(firms_list,
                            firms_uncategorized = NULL,
                            base_map = NULL,
@@ -37,28 +36,33 @@ plot_osm_fires <- function(firms_list,
   })
   all_firms_sf <- do.call(rbind, firms_list)
 
+  # Add uncategorized fires to the full dataset if requested
+  if (include_uncategorized && !is.null(firms_uncategorized)) {
+    firms_uncategorized <- firms_uncategorized[!sf::st_is_empty(firms_uncategorized), ]
+    firms_uncategorized <- sf::st_cast(firms_uncategorized, "POINT")
+    firms_uncategorized$fire_type <- "unknown"
+    all_firms_sf <- rbind(all_firms_sf, firms_uncategorized)
+  }
+
   if (nrow(all_firms_sf) == 0) {
     stop("No fire points found - cannot plot.")
   }
 
-  # Handle base map input
+  # Handle base map
   if (is.null(base_map)) {
     message("No base_map provided. Using Natural Earth country outlines.")
     base_map <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
   } else if (is.character(base_map)) {
-    if (!file.exists(base_map)) {
-      stop("The base_map path does not exist: ", base_map)
-    }
-    message("Reading base_map from file: ", base_map)
+    if (!file.exists(base_map)) stop("The base_map path does not exist: ", base_map)
     base_map <- sf::read_sf(base_map)
   }
 
-  # Ensure CRS match
+  # CRS match
   if (!is.null(sf::st_crs(base_map)) && sf::st_crs(base_map) != sf::st_crs(all_firms_sf)) {
     base_map <- sf::st_transform(base_map, sf::st_crs(all_firms_sf))
   }
 
-  # color scheme
+  # Unified color scheme with "unknown"
   fire_type_colors <- c(
     "natural"     = "forestgreen",
     "agriculture" = "goldenrod",
@@ -71,26 +75,22 @@ plot_osm_fires <- function(firms_list,
     "unknown"     = "black"
   )
 
-  # Build plot
+  # Plot
   p <- ggplot() +
-    geom_sf(data = base_map, fill = "gray90", color = "black", lwd = 0.3) +
+    geom_sf(data = base_map, fill = "gray90", color = "black", linewidth = 0.3) +
     geom_sf(
       data = all_firms_sf,
-      aes(
-        color = fire_type,
-        size = ifelse(fire_type == "unknown", 1, 2),
-        alpha = ifelse(fire_type == "unknown", 0.4, 0.7)
-      )
+      aes(color = fire_type),
+      size = ifelse(all_firms_sf$fire_type == "unknown", 1, 2),
+      alpha = ifelse(all_firms_sf$fire_type == "unknown", 0.4, 0.7)
     ) +
     scale_color_manual(values = fire_type_colors, name = "Fire Classification") +
     coord_sf() +
     labs(
       title = "Classified FIRMS Fire Detections",
       x = "Longitude", y = "Latitude",
-      subtitle = if (include_uncategorized) "Uncategorized fires shown as small black dots" else NULL
     ) +
     theme_minimal()
 
   return(p)
 }
-
