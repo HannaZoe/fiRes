@@ -33,8 +33,9 @@ uncategorised_fires <- function(firms_sf, classified_firms_list) {
   # Summary message
   message("FIRMS Fire Classification Summary:")
   message("Total fires: ", nrow(firms_sf))
-  message("Classified: ", nrow(classified_fires))
   message("Uncategorized: ", nrow(uncategorized_fires))
+  message("Classified: ", nrow(classified_fires))
+
 
   if ("fire_type" %in% colnames(classified_fires)) {
     fire_type_counts <- table(classified_fires$fire_type)

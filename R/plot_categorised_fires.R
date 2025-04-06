@@ -65,29 +65,23 @@ plot_osm_fires <- function(firms_list,
     "parks" = "darkgreen", "airport" = "gray", "unknown" = "black"
   )
 
-  # Start plot
+  # Build plot
   p <- ggplot() +
     geom_sf(data = base_map, fill = "gray90", color = "black", lwd = 0.3) +
-    geom_sf(data = all_firms_sf, aes(color = fire_type), size = 2, alpha = 0.7) +
+    geom_sf(
+      data = all_firms_sf,
+      aes(color = fire_type),
+      size = ifelse(all_firms_sf$fire_type == "unknown", 1, 2),
+      alpha = ifelse(all_firms_sf$fire_type == "unknown", 0.4, 0.7)
+    ) +
     scale_color_manual(values = fire_colors, name = "Fire Classification") +
     coord_sf() +
     labs(
       title = "Classified FIRMS Fire Detections",
-      x = "Longitude", y = "Latitude"
+      x = "Longitude", y = "Latitude",
+      subtitle = if (include_uncategorized) "Uncategorized fires shown as small black dots" else NULL
     ) +
     theme_minimal()
-
-  # Add uncategorized if desired
-  if (include_uncategorized && !is.null(firms_uncategorized)) {
-    firms_uncategorized <- firms_uncategorized[!sf::st_is_empty(firms_uncategorized), ]
-    firms_uncategorized <- sf::st_cast(firms_uncategorized, "POINT")
-
-    p <- p + geom_sf(
-      data = firms_uncategorized,
-      shape = 21, fill = "gray", color = "black", size = 3, alpha = 0.5
-    ) +
-      labs(subtitle = "Uncategorized FIRMS fires shown as gray circles")
-  }
 
   return(p)
 }
