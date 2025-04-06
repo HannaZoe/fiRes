@@ -21,6 +21,8 @@
 #' @importFrom sf st_crs st_transform st_buffer st_union st_make_valid st_cast st_as_sf st_bbox st_intersects st_centroid st_coordinates
 #' @importFrom osmdata opq add_osm_feature osmdata_sf
 #' @importFrom dplyr bind_rows
+#' @importFrom magrittr %>%
+#'
 #' @export
 
 fetch_osm <- function(firms_sf,

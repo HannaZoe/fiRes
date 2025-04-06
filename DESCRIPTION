@@ -22,6 +22,7 @@ Imports:
     httr,
     dplyr,
     lubridate,
-    rlang
+    rlang,
+    magrittr
 
 

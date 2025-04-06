@@ -29,8 +29,6 @@ MODIS confidence level (numeric, 0-100) is automatically converted to these char
 }
 \value{
 An \code{sf} object containing fire detections within the selected time range and area.
-
-#' @importFrom sf st_crs st_transform st_bbox
 }
 \description{
 This function retrieves fires detected by NASA's FIRMS (Fire Information for Resource Management System) via their API

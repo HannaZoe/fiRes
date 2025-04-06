@@ -15,8 +15,9 @@
 #'
 #' @return An `sf` object containing fire detections within the selected time range and area.
 #'
-#' #' @importFrom sf st_crs st_transform st_bbox
+#' @importFrom sf st_crs st_transform st_bbox
 #' @importFrom httr GET content
+#'
 #'
 #' @export
 
