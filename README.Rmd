@@ -45,15 +45,31 @@ api_key <- "your_firms_api_key"
 ```
 
 ### 3. Fetch FIRMS Fire Data
-The `fetch_firms()` function retrieves fire detections using the FIRMS API. You must provide a region (AOI), time window (`start_date`, `end_date`), and optionally choose the dataset (`VIIRS_SNPP_NRT` or `MODIS_NRT`). You can also filter fires by confidence category (`l`, `n`, `h`).
+
+## 3.1 Fetch Near Real Time (NRT) FIRMS data
+The `fetch_firms_NRT()` function retrieves fire detections using the FIRMS API. You must provide a region (AOI) and choose the dataset (`VIIRS_SNPP_NRT`, `VIIRS_NOAA20_NRT` or `MODIS_NRT`). The time frame (`start_date`, `end_date`) of NRT data is limited to the past 10 days. However, MODIS data is often only available for the past 7 days. You can also filter fires by confidence category (`l`, `n`, `h`).
 
 ```r
-firms_raw <- fetch_firms(
+firms_raw_NRT <- fetch_firms_NRT(
   api_key = api_key,
   region_sf = region_sf,
   start_date = "2024-01-01",
   end_date = "2024-12-31",
   dataset = "VIIRS_SNPP_NRT",
+  confidence_level = c("n", "h")
+)
+```
+
+## 3.2 Fetch historic FIRMS data
+The `fetch_firms_historic()` function retrieves fire detections using the FIRMS API. The time frame (`start_date`, `end_date`) of archive data depends on the satelite. MODIS data is available from 2000, VIIRS SNPP data from 2012 and VIIRS NOAA data from 2018. You must also provide a region (AOI), and choose the dataset (`VIIRS_SNPP_NRT` or `MODIS_NRT`). You can also filter fires by confidence category (`l`, `n`, `h`).
+
+```r
+firms_raw_historic <- fetch_firms_historic(
+  api_key = api_key,
+  region_sf = region_sf,
+  start_date = "2024-01-02",
+  end_date = "2024-03-11",
+  dataset = "MODIS_SP",
   confidence_level = c("n", "h")
 )
 ```
