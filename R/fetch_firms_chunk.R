@@ -26,8 +26,8 @@ fetch_firms_chunk <- function(api_key, region_sf, start_date, end_date, dataset,
   day_range <- as.numeric(difftime(end_date, start_date, units = "days")) + 1
 
   # Build FIRMS URL
-  base_url <- "https://firms.modaps.eosdis.nasa.gov/api/area/csv/"
-  url <- paste0(base_url, api_key, "/", dataset, "/", bbox_str, "/", day_range, "/")
+  base_url <- "https://firms.modaps.eosdis.nasa.gov/api/csv/"
+  url <- paste0(base_url, api_key, "/", dataset, "/", start_date, "/", end_date, "/", bbox_str, "/")
   temp_file <- tempfile(fileext = ".csv")
 
   # Supress rather long download message that otherwise appears in Console
