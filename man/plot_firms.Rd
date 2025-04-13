@@ -7,7 +7,7 @@
 plot_firms(firms_sf, base_map = NULL)
 }
 \arguments{
-\item{firms_sf}{An \code{sf} object of fire detections. Must include a brightness column (\code{bright_ti4} or \code{brightness}) and a \code{frp} column.}
+\item{firms_sf}{An \code{sf} object of fire detections. Must include a brightness column (\code{bright_ti5} or \code{brightness}) and a \code{frp} column.}
 
 \item{base_map}{Optional. Either an \code{sf} object or a file path (e.g., to shapefile or GeoPackage). If \code{NULL}, uses Natural Earth.}
 }
@@ -16,5 +16,5 @@ A \code{ggplot} object showing the fire detections.
 }
 \description{
 Visualizes FIRMS fire points on a basemap, color-coded by brightness and scaled by Fire Radiative Power (FRP).
-Accepts both VIIRS (\code{bright_ti4}) and MODIS (\code{brightness}) data automatically.
+Accepts both VIIRS (\code{bright_ti5}) and MODIS (\code{brightness}) data automatically.
 }

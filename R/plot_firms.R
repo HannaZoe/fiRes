@@ -1,9 +1,9 @@
 #' Plot FIRMS fire detections with brightness and FRP
 #'
 #' Visualizes FIRMS fire points on a basemap, color-coded by brightness and scaled by Fire Radiative Power (FRP).
-#' Accepts both VIIRS (`bright_ti4`) and MODIS (`brightness`) data automatically.
+#' Accepts both VIIRS (`bright_ti5`) and MODIS (`brightness`) data automatically.
 #'
-#' @param firms_sf An `sf` object of fire detections. Must include a brightness column (`bright_ti4` or `brightness`) and a `frp` column.
+#' @param firms_sf An `sf` object of fire detections. Must include a brightness column (`bright_ti5` or `brightness`) and a `frp` column.
 #' @param base_map Optional. Either an `sf` object or a file path (e.g., to shapefile or GeoPackage). If `NULL`, uses Natural Earth.
 #'
 #' @return A `ggplot` object showing the fire detections.
@@ -26,12 +26,12 @@ plot_firms <- function(firms_sf, base_map = NULL) {
   }
 
   # Dynamically detect brightness column
-  brightness_col <- if ("bright_ti4" %in% colnames(firms_sf)) {
-    "bright_ti4"
+  brightness_col <- if ("bright_ti5" %in% colnames(firms_sf)) {
+    "bright_ti5"
   } else if ("brightness" %in% colnames(firms_sf)) {
     "brightness"
   } else {
-    stop("Error: Could not find the brightness column (bright_ti4 or brightness).")
+    stop("Error: Could not find the brightness column (bright_ti5 or brightness).")
   }
 
   # Handle base_map input: NULL, file path, or sf object
